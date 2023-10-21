@@ -1,0 +1,59 @@
+version: "3"
+
+services:
+    nginx:
+        image: nginx:alpine
+        ports:
+            - "${APP_PORT:-8899}:80"
+        volumes:
+            - ./:/var/www
+            - ./docker/nginx/conf.d/:/etc/nginx/conf.d
+        depends_on:
+            - fpm
+    fpm:
+        build:
+            args:
+                user: ${USER}
+                uid: ${UID}
+            context: docker/fpm
+            dockerfile: Dockerfile
+            target: app
+        working_dir: /var/www
+        volumes:
+            - ./:/var/www
+        depends_on:
+            - mysql
+            - redis
+    worker:
+        build:
+            args:
+                user: ${USER}
+                uid: ${UID}
+            context: docker/fpm
+            dockerfile: Dockerfile
+            target: worker
+        working_dir: /var/www
+        restart: unless-stopped
+        volumes:
+            - ./:/var/www
+            - ./docker/fpm/conf.d/supervisord.conf:/etc/supervisor/supervisord.conf
+        depends_on:
+            - mysql
+            - redis
+    mysql:
+        image: mysql:8
+        environment:
+            MYSQL_DATABASE: "${DB_DATABASE}"
+            MYSQL_ROOT_PASSWORD: "root"
+            MYSQL_USER: "${DB_USERNAME}"
+            MYSQL_PASSWORD: "${DB_PASSWORD}"
+        volumes:
+            - mysql_data:/var/lib/mysql
+    redis:
+        image: redis:alpine
+        volumes:
+            - redis_data:/data
+
+volumes:
+    mysql_data:
+    redis_data:

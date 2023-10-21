@@ -1,0 +1,17 @@
+<?php
+
+use App\Http\Controllers\Web\DeliveryController;
+use App\Http\Controllers\Web\WebhookController;
+use Illuminate\Support\Facades\Route;
+
+Route::get('deliveries', [DeliveryController::class, 'index'])
+    ->name('deliveries.index');
+
+Route::get('deliveries/{maskedId}', [DeliveryController::class, 'show'])
+    ->name('deliveries.show');
+
+Route::post('deliveries/{maskedId}/update-status', [DeliveryController::class, 'updateStatus'])
+    ->name('deliveries.update-status');
+
+Route::resource('webhooks', WebhookController::class)
+    ->except(['edit', 'update']);
