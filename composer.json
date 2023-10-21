@@ -1,8 +1,8 @@
 {
-    "name": "laravel/laravel",
+    "name": "rahimi-ali/snapp-box-fake",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "Fake Snapp Box for testing purposes.",
+    "keywords": ["snapp", "box", "snappbox", "fake", "mock", "sandbox"],
     "license": "MIT",
     "require": {
         "php": "^8.1",
