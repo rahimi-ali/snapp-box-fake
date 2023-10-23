@@ -53,6 +53,11 @@ class CreateDeliveryRequest extends FormRequest
             'data.dropOffDetails.*.contactEmail' => ['sometimes', 'string', 'email'],
             'data.dropOffDetails.*.comment' => ['sometimes', 'string'],
 
+            'data.dropOffDetails.*.merchandise' => ['sometimes', 'array'],
+            'data.dropOffDetails.*.merchandise.storeId' => ['string'],
+            'data.dropOffDetails.*.merchandise.description' => ['string'],
+            'data.dropOffDetails.*.merchandise.cost' => ['numeric'],
+
             'data.itemDetails' => ['required', 'array', 'min:1'],
             'data.itemDetails.*.name' => ['required', 'string'],
             'data.itemDetails.*.quantity' => ['required', 'integer'],

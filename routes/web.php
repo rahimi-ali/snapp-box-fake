@@ -13,5 +13,8 @@ Route::get('deliveries/{maskedId}', [DeliveryController::class, 'show'])
 Route::post('deliveries/{maskedId}/update-status', [DeliveryController::class, 'updateStatus'])
     ->name('deliveries.update-status');
 
+Route::post('deliveries/{maskedId}/pay-invoice', [DeliveryController::class, 'payInvoice'])
+    ->name('deliveries.pay-invoice');
+
 Route::resource('webhooks', WebhookController::class)
     ->except(['edit', 'update']);

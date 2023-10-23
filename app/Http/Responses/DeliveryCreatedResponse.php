@@ -35,20 +35,33 @@ class DeliveryCreatedResponse extends JsonResponse
                         'driverVehicleType' => __('values.vehicle_types.' . $delivery->deliveryCategory),
                         'createdAt' => $delivery->created_at->toIso8601String(),
                         'createdAtJalali' => $delivery->created_at->locale('fa')->toDateTimeLocalString(),
-                        'terminals' => $delivery->terminals->map(fn(DeliveryTerminal $terminal) => [
-                            'id' => $terminal->id,
-                            'sequenceNumber' => $terminal->sequence,
-                            'type' => strtoupper($terminal->type),
-                            'status' => $terminal->status,
-                            'contactName' => $terminal->contactName,
-                            'contactPhoneNumber' => $terminal->contactPhoneNumber,
-                            'latitude' => $terminal->latitude,
-                            'longitude' => $terminal->longitude,
-                            'address' => $terminal->address,
-                            'statusText' => __('values.terminal_statuses.' . $terminal->status),
-                            'verboseAddress' => $terminal->address,
-                            'editMerchandiseInfo' => 'DISABLED',
-                        ]),
+                        'terminals' => $delivery->terminals->map(function (DeliveryTerminal $terminal) use ($delivery) {
+                            $commonTerminalData = [
+                                'id' => $terminal->id,
+                                'sequenceNumber' => $terminal->sequence,
+                                'type' => strtoupper($terminal->type),
+                                'status' => $terminal->status,
+                                'contactName' => $terminal->contactName,
+                                'contactPhoneNumber' => $terminal->contactPhoneNumber,
+                                'latitude' => $terminal->latitude,
+                                'longitude' => $terminal->longitude,
+                                'address' => $terminal->address,
+                                'statusText' => __('values.terminal_statuses.' . $terminal->status),
+                                'verboseAddress' => $terminal->address,
+                                'editMerchandiseInfo' => 'DISABLED',
+                            ];
+
+                            if ($terminal->type === 'drop' && $delivery->merchandiseCost) {
+                                return [...$commonTerminalData, [
+                                    'merchandiseInvoiceId' => (string) $delivery->id,
+                                    'merchandiseInvoiceLink' => route('deliveries.show', $delivery),
+                                    'merchandiseInvoiceLinkRecipient' => route('deliveries.show', $delivery),
+                                    'merchandiseInvoiceStatus' => $delivery->invoiceStatus,
+                                ]];
+                            } else {
+                                 return $commonTerminalData;
+                            }
+                        }),
                         'owner' => true,
                         'ongoing' => true,
                         'returning' => false,

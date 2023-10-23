@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-use App\Jobs\StatusUpdateWebhook;
+use App\Jobs\DeliveryStatusUpdateWebhook;
+use App\Jobs\InvoiceStatusUpdateWebhook;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -31,9 +32,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string|null $bikerName
  * @property string|null $bikerPhoneNumber
  * @property string|null $bikerPhotoUrl
+ * @property int|null $merchandiseStoreId
+ * @property int|null $merchandiseCost
+ * @property string|null $merchandiseDescription
+ * @property string|null $invoiceStatus
  * @property Collection<int, DeliveryItem> $items
  * @property Collection<int, DeliveryTerminal> $terminals
  * @property Collection<int, StatusHistory> $statusHistories
+ * @property Collection<int, InvoiceStatusHistory> $invoiceStatusHistories
  */
 class Delivery extends Model
 {
@@ -56,12 +62,22 @@ class Delivery extends Model
         return $this->hasMany(StatusHistory::class);
     }
 
+    public function invoiceStatusHistories(): HasMany
+    {
+        return $this->hasMany(InvoiceStatusHistory::class);
+    }
+
     protected static function booted(): void
     {
         static::created(function (Delivery $delivery) {
             StatusHistory::query()->create([
                 'delivery_id' => $delivery->id,
                 'status' => $delivery->status,
+            ]);
+
+            InvoiceStatusHistory::query()->create([
+                'delivery_id' => $delivery->id,
+                'status' => $delivery->invoiceStatus,
             ]);
         });
 
@@ -72,7 +88,16 @@ class Delivery extends Model
                     'status' => $delivery->status,
                 ]);
 
-                StatusUpdateWebhook::dispatch($delivery)->afterCommit();
+                DeliveryStatusUpdateWebhook::dispatch($delivery)->afterCommit();
+            }
+
+            if ($delivery->isDirty('invoiceStatus')) {
+                InvoiceStatusHistory::query()->create([
+                    'delivery_id' => $delivery->id,
+                    'status' => $delivery->invoiceStatus,
+                ]);
+
+                InvoiceStatusUpdateWebhook::dispatch($delivery)->afterCommit();
             }
         });
     }

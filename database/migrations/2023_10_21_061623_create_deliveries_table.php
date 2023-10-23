@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('deliveries', function (Blueprint $table) {
             $table->id();
+
             $table->unsignedBigInteger('customerId');
             $table->string('maskedId')->index();
             $table->string('status');
@@ -29,6 +30,11 @@ return new class extends Migration
             $table->string('bikerName')->nullable();
             $table->string('bikerPhoneNumber')->nullable();
             $table->string('bikerPhotoUrl')->nullable();
+            $table->unsignedBigInteger('merchandiseStoreId')->nullable();
+            $table->double('merchandiseCost')->nullable();
+            $table->string('merchandiseDescription')->nullable();
+            $table->string('invoiceStatus')->nullable();
+
             $table->timestamps();
         });
     }

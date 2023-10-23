@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Delivery;
+use Exception;
 use Faker\Factory;
 use Faker\Generator;
 use Illuminate\Http\RedirectResponse;
@@ -61,6 +62,7 @@ class DeliveryController extends Controller
     {
         $status = $request->get('status');
 
+        /** @var Delivery $delivery */
         $delivery = Delivery::query()
             ->where('maskedId', $maskedId)
             ->orWhere('id', $maskedId)
@@ -85,6 +87,29 @@ class DeliveryController extends Controller
         } else {
             $delivery->update(['status' => $status]);
         }
+
+        return redirect(route('deliveries.show', $maskedId));
+    }
+
+    public function payInvoice(string $maskedId): RedirectResponse
+    {
+        /** @var Delivery $delivery */
+        $delivery = Delivery::query()
+            ->where('maskedId', $maskedId)
+            ->orWhere('id', $maskedId)
+            ->firstOrFail();
+
+        if ($delivery->invoiceStatus === 'SUCCESS') {
+            return redirect(route('deliveries.show', $maskedId));
+        }
+
+        if ($delivery->merchandiseCost === null) {
+            throw new Exception('This delivery has no invoice to pay!');
+        }
+
+        $delivery->update([
+            'invoiceStatus' => 'SUCCESS',
+        ]);
 
         return redirect(route('deliveries.show', $maskedId));
     }

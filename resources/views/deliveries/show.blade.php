@@ -82,6 +82,23 @@
                     @endif
                 </span>
             </div>
+
+            <div>
+                <span class="text-gray-900">شناسه فروشگاه پرداخت: </span>
+                <span class="text-sm text-gray-500" dir="ltr">{{ $delivery->merchandiseStoreId ?? 'پرداخت ندارد' }}</span>
+            </div>
+            <div>
+                <span class="text-gray-900">مبلع پرداخت هزینه سفارش: </span>
+                <span class="text-sm text-gray-500" dir="ltr">{{ $delivery->merchandiseCost ?? 'پرداخت ندارد' }}</span>
+            </div>
+            <div>
+                <span class="text-gray-900">وضعیت پرداخت هزینه سفارش: </span>
+                <span class="text-sm text-gray-500" dir="ltr">{{ $delivery->invoiceStatus ?? 'پرداخت ندارد' }}</span>
+            </div>
+            <div>
+                <span class="text-gray-900">توضیح پرداخت سفارش: </span>
+                <span class="text-sm text-gray-500" dir="ltr">{{ $delivery->merchandiseDescription ?? 'پرداخت ندارد' }}</span>
+            </div>
         </div>
     </div>
 
@@ -100,7 +117,7 @@
                 <form method="POST" action="{{ route('deliveries.update-status', $delivery) }}">
                     @csrf
                     <input name="status" type="hidden" value="PENDING"/>
-                    <button type="submit" class="bg-green-500 text-white rounded-lg py-2 px-12">کنسل راننده</button>
+                    <button type="submit" class="bg-orange-500 text-white rounded-lg py-2 px-12">کنسل راننده</button>
                 </form>
             @endif
 
@@ -108,7 +125,7 @@
                 <form method="POST" action="{{ route('deliveries.update-status', $delivery) }}">
                     @csrf
                     <input name="status" type="hidden" value="ARRIVED_AT_PICKUP"/>
-                    <button type="submit" class="bg-green-500 text-white rounded-lg py-2 px-12">رسیدن به مبدا</button>
+                    <button type="submit" class="bg-blue-500 text-white rounded-lg py-2 px-12">رسیدن به مبدا</button>
                 </form>
             @endif
 
@@ -116,7 +133,7 @@
                 <form method="POST" action="{{ route('deliveries.update-status', $delivery) }}">
                     @csrf
                     <input name="status" type="hidden" value="PICKED_UP"/>
-                    <button type="submit" class="bg-green-500 text-white rounded-lg py-2 px-12">گرفتن مرسوله</button>
+                    <button type="submit" class="bg-blue-500 text-white rounded-lg py-2 px-12">گرفتن مرسوله</button>
                 </form>
             @endif
 
@@ -124,7 +141,7 @@
                 <form method="POST" action="{{ route('deliveries.update-status', $delivery) }}">
                     @csrf
                     <input name="status" type="hidden" value="ARRIVED_AT_DROP_OFF"/>
-                    <button type="submit" class="bg-green-500 text-white rounded-lg py-2 px-12">رسیدن به مقصد</button>
+                    <button type="submit" class="bg-blue-500 text-white rounded-lg py-2 px-12">رسیدن به مقصد</button>
                 </form>
             @endif
 
@@ -132,15 +149,22 @@
                 <form method="POST" action="{{ route('deliveries.update-status', $delivery) }}">
                     @csrf
                     <input name="status" type="hidden" value="DELIVERED"/>
-                    <button type="submit" class="bg-green-500 text-white rounded-lg py-2 px-12">تحویل دادن</button>
+                    <button type="submit" class="bg-blue-500 text-white rounded-lg py-2 px-12">تحویل دادن</button>
                 </form>
             @endif
 
             @if(in_array($delivery->status, ['ACCEPTED', 'ARRIVED_AT_PICK_UP']))
                 <form method="POST" action="{{ route('deliveries.update-status', $delivery) }}">
                     @csrf
-                    <input name="status" type="hidden" value="ACCEPTED"/>
+                    <input name="status" type="hidden" value="CANCELLED"/>
                     <button type="submit" class="bg-green-500 text-white rounded-lg py-2 px-12">کنسل سفارش</button>
+                </form>
+            @endif
+
+            @if($delivery->invoiceStatus === 'PENDING')
+                <form method="POST" action="{{ route('deliveries.pay-invoice', $delivery) }}">
+                    @csrf
+                    <button type="submit" class="bg-green-500 text-white rounded-lg py-2 px-12">پرداخت موفق</button>
                 </form>
             @endif
         </div>

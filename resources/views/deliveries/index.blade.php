@@ -56,51 +56,58 @@
         </form>
 
         {{--    Data    --}}
-        <table class="w-full text-sm text-left text-gray-500 rounded-lg text-right">
-            <thead class="text-lg text-gray-700 uppercase bg-gray-100">
-            <tr>
-                <th class="p-4">شناسه</th>
-                <th class="p-4">شناسه مخفی</th>
-                <th class="p-4">شناسه مرجع</th>
-                <th class="p-4">تحویل گیرنده</th>
-                <th class="p-4">وضعیت</th>
-                <th class="p-4">تاریخ ثبت</th>
-                <th class="p-4">آخرین تغییر</th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach($deliveries as $delivery)
-                <tr class="hover:bg-gray-50 hover:cursor-pointer"
-                    onclick="location.href = '{{ route('deliveries.show', $delivery) }}'">
-                    <td class="p-4">{{ $delivery->id }}</td>
-                    <td class="p-4">{{ $delivery->maskedId }}</td>
-                    <td class="p-4">{{ $delivery->customerRefId }}</td>
-                    <td class="p-4">{{ $delivery->terminals->firstWhere('type', 'drop')->contactName }}</td>
-                    <td class="p-4">{{ __('values.delivery_statuses.' . $delivery->status) }}</td>
-                    <td class="p-4" dir="ltr">{{ $delivery->created_at->format('Y-m-d H:i:s') }}</td>
-                    <td class="p-4" dir="ltr">{{ $delivery->updated_at->format('Y-m-d H:i:s') }}</td>
+        @if(count($deliveries) === 0)
+            <div class="text-center text-gray-500 text-md" dir="ltr">No deliveries found.</div>
+        @else
+            <table class="w-full text-sm text-left text-gray-500 rounded-lg text-right">
+                <thead class="text-lg text-gray-700 uppercase bg-gray-100">
+                <tr>
+                    <th class="p-4">شناسه</th>
+                    <th class="p-4">شناسه مخفی</th>
+                    <th class="p-4">شناسه مرجع</th>
+                    <th class="p-4">تحویل گیرنده</th>
+                    <th class="p-4">وضعیت</th>
+                    <th class="p-4">تاریخ ثبت</th>
+                    <th class="p-4">آخرین تغییر</th>
                 </tr>
-            @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                @foreach($deliveries as $delivery)
+                    <tr class="hover:bg-gray-50 hover:cursor-pointer"
+                        onclick="location.href = '{{ route('deliveries.show', $delivery) }}'">
+                        <td class="p-4">{{ $delivery->id }}</td>
+                        <td class="p-4">{{ $delivery->maskedId }}</td>
+                        <td class="p-4">{{ $delivery->customerRefId }}</td>
+                        <td class="p-4">{{ $delivery->terminals->firstWhere('type', 'drop')->contactName }}</td>
+                        <td class="p-4">{{ __('values.delivery_statuses.' . $delivery->status) }}</td>
+                        <td class="p-4" dir="ltr">{{ $delivery->created_at->format('Y-m-d H:i:s') }}</td>
+                        <td class="p-4" dir="ltr">{{ $delivery->updated_at->format('Y-m-d H:i:s') }}</td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
+        @endif
+
 
         {{--    Pagination    --}}
-        <div class="flex justify-center items-center mt-4">
-            <a
-                class="text-lg @if($hasPreviousPage) text-gray-900 hover:text-blue-500 @else text-gray-300 @endif"
-                href="{{$previousPage}}"
-            >
-                <
-            </a>
-            <span class="text-sm text-gray-500 px-4">
-                صفحه {{ $currentPage }} از {{ $totalPages }}
-            </span>
-            <a
-                class="text-lg @if($hasNextPage) text-gray-900 hover:text-blue-500 @else text-gray-300 @endif"
-                href="{{ $nextPage }}"
-            >
+        @if(count($deliveries) !== 0)
+            <div class="flex justify-center items-center mt-4">
+                <a
+                    class="text-lg @if($hasPreviousPage) text-gray-900 hover:text-blue-500 @else text-gray-300 @endif"
+                    href="{{$previousPage}}"
                 >
-            </a>
-        </div>
+                    <
+                </a>
+                <span class="text-sm text-gray-500 px-4">
+                    صفحه {{ $currentPage }} از {{ $totalPages }}
+                </span>
+                <a
+                    class="text-lg @if($hasNextPage) text-gray-900 hover:text-blue-500 @else text-gray-300 @endif"
+                    href="{{ $nextPage }}"
+                >
+                    >
+                </a>
+            </div>
+        @endif
     </div>
 @endsection

@@ -38,6 +38,7 @@ class DeliveryController extends Controller
         DB::beginTransaction();
         try {
             $delivery = new Delivery();
+
             $delivery->customerId = $request['customerId'];
             $delivery->maskedId = Str::uuid()->toString();
             $delivery->status = Delivery::STATUS_PENDING;
@@ -54,6 +55,14 @@ class DeliveryController extends Controller
             $delivery->endTimeSlot = new Carbon($data['timeSlotDTO']['endTimeSlot'] ?? 'now');
             // TODO can it be based on distance?
             $delivery->deliveryFare = $this->faker->numberBetween(25_000, 200_000);
+
+            if (isset($data['dropOffDetails'][0]['merchandise'])) {
+                $delivery->merchandiseCost =  $data['dropOffDetails'][0]['merchandise']['cost'];
+                $delivery->merchandiseStoreId = $data['dropOffDetails'][0]['merchandise']['storeId'];
+                $delivery->merchandiseDescription = $data['dropOffDetails'][0]['merchandise']['description'];
+                $delivery->invoiceStatus = 'PENDING';
+            }
+
             $delivery->save();
 
             foreach ($data['itemDetails'] as $item) {
