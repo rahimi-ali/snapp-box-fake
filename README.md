@@ -12,6 +12,7 @@ docker compose exec fpm php artisan key:generate
 docker compose exec fpm npm install
 docker compose exec fpm npm run build
 docker compose exec fpm php artisan migrate
+docker compose exec fpm php artisan queue:work
 ```
 
 ## Pages
