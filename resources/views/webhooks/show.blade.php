@@ -27,7 +27,7 @@
                 @foreach($webhook->headers as $header)
                     <div class="border border-gray-200 p-2 my-2 rounded">
                         <span class="text-md text-gray-600">{{ $header->name }}: </span>
-                        <span class="text-sm text-gray-500">{{ $header->value }}</span>
+                        <span class="text-sm text-gray-500 block overflow-x-scroll">{{ $header->value }}</span>
                     </div>
                 @endforeach
             @endif
