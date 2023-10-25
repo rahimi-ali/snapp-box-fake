@@ -250,6 +250,27 @@
         </div>
     </div>
 
+    <div class="bg-white p-8 rounded-lg w-full my-4" style="max-width: 1080px">
+        <h2 class="mb-4 text-2xl">محصولات</h2>
+        <div class="grid grid-cols-2 gap-4 w-full">
+            <div>
+                    <span class="text-md text-gray-900">عنوان</span>
+            </div>
+            <div>
+                <span class="text-md text-gray-900" dir="ltr">تعداد</span>
+            </div>
+            @foreach($delivery->items as $item)
+                <div>
+                    <span
+                        class="text-sm text-gray-600">{{ $item->name }}</span>
+                </div>
+                <div>
+                    <span class="text-sm text-gray-600" dir="ltr">{{ $item->quantity }}</span>
+                </div>
+            @endforeach
+        </div>
+    </div>
+
     <a href="{{ route('deliveries.index') }}" class="fixed top-5 right-5 p-2 bg-gray-700 rounded-full">
         <svg fill="#FFFFFF" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
              xmlns:xlink="http://www.w3.org/1999/xlink"

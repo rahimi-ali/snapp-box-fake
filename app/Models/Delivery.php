@@ -75,10 +75,12 @@ class Delivery extends Model
                 'status' => $delivery->status,
             ]);
 
-            InvoiceStatusHistory::query()->create([
-                'delivery_id' => $delivery->id,
-                'status' => $delivery->invoiceStatus,
-            ]);
+            if ($delivery->invoiceStatus !== null) {
+                InvoiceStatusHistory::query()->create([
+                    'delivery_id' => $delivery->id,
+                    'status' => $delivery->invoiceStatus,
+                ]);
+            }
         });
 
         static::updated(function (Delivery $delivery) {

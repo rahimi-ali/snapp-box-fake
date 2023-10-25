@@ -3,26 +3,22 @@
 namespace App\Jobs;
 
 use App\Models\Delivery;
-use App\Models\WebhookSubscriber;
+use App\Services\WebhookService;
 use Faker\Factory;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
-use Throwable;
 
 class DeliveryStatusUpdateWebhook implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, Queueable, SerializesModels;
 
     public function __construct(public readonly Delivery $delivery)
     {
     }
 
-    public function handle(): void
+    public function handle(WebhookService $webhookService): void
     {
         $faker = Factory::create('fa_IR');
 
@@ -51,37 +47,6 @@ class DeliveryStatusUpdateWebhook implements ShouldQueue
             $payload['longitude'] = 51.2231463; // TODO ?
         }
 
-        $webhookSubscribers = WebhookSubscriber::query()->with(['headers'])->get();
-
-        foreach ($webhookSubscribers as $webhookSubscriber) {
-            $headers = [
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
-            ];
-
-            foreach ($webhookSubscriber->headers as $header) {
-                $headers[$header->key] = $header->value;
-            }
-
-            try {
-                $response = Http::withHeaders($headers)->post($webhookSubscriber->url, $payload);
-                if ($response->failed()) {
-                    Log::error('Webhook failed', [
-                        'url' => $webhookSubscriber->url,
-                        'payload' => $payload,
-                        'headers' => $headers,
-                        'status' => $response->status(),
-                        'response' => $response->body(),
-                    ]);
-                }
-            } catch (Throwable $e) {
-                Log::error('Webhook failed', [
-                    'url' => $webhookSubscriber->url,
-                    'payload' => $payload,
-                    'headers' => $headers,
-                    'exception' => $e->getMessage(),
-                ]);
-            }
-        }
+        $webhookService->callAllSubscribers($payload);
     }
 }
