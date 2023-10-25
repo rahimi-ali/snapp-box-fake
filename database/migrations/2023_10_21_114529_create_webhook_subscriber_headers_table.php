@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('webhook_subscriber_id')->constrained()->cascadeOnDelete();
             $table->string('name');
-            $table->string('value');
+            $table->text('value');
             $table->timestamps();
         });
     }
