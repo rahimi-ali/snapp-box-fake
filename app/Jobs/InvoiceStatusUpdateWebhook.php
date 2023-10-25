@@ -43,7 +43,7 @@ class InvoiceStatusUpdateWebhook implements ShouldQueue
             ];
 
             foreach ($webhookSubscriber->headers as $header) {
-                $headers[$header->key] = $header->value;
+                $headers[$header->name] = $header->value;
             }
 
             try {
