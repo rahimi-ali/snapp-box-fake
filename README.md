@@ -8,6 +8,7 @@ To allow testing Snapp Box interaction in local and staging environments.
 cp .env.example .env
 docker compose up -d
 docker compose exec fpm composer install
+docker compose exec fpm php artisan key:generate
 docker compose exec fpm npm install
 docker compose exec fpm npm run build
 docker compose exec fpm php artisan migrate
