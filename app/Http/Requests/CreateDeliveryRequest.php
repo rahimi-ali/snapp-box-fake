@@ -70,7 +70,6 @@ class CreateDeliveryRequest extends FormRequest
             'data.timeSlotDTO.startTimeSlot' => [
                 'required_with:data.timeSlotDTO',
                 'date_format:Y-m-d H:i:s',
-                'after:now',
                 'before:data.timeSlotDTO.endTimeSlot',
             ],
             'data.timeSlotDTO.endTimeSlot' => ['required_with:data.timeSlotDTO', 'date_format:Y-m-d H:i:s'],
