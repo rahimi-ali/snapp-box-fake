@@ -18,7 +18,9 @@ class CallWebhook implements ShouldQueue
 {
     use Dispatchable, Queueable, SerializesModels;
 
-    public int $tries = 3;
+    public int $tries = 50;
+
+    public int $backoff = 5;
 
     public function __construct(
         public readonly WebhookSubscriber $webhookSubscriber,
