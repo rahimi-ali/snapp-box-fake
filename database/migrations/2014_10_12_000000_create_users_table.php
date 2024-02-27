@@ -17,6 +17,9 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->boolean('can_view_webhooks')->default(0);
+            $table->boolean('can_manage_webhooks')->default(0);
+            $table->boolean('can_update_deliveries')->default(1);
             $table->rememberToken();
             $table->timestamps();
         });

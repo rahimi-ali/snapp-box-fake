@@ -12,8 +12,11 @@ use Carbon\Carbon;
 use Faker\Factory;
 use Faker\Generator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Location\Coordinate;
+use Location\Distance\Vincenty;
 use Throwable;
 
 class DeliveryController extends Controller
@@ -53,8 +56,11 @@ class DeliveryController extends Controller
             $delivery->batchable = $data['orderDetails']['batchable'];
             $delivery->startTimeSlot = new Carbon($data['timeSlotDTO']['startTimeSlot'] ?? 'now');
             $delivery->endTimeSlot = new Carbon($data['timeSlotDTO']['endTimeSlot'] ?? 'now');
-            // TODO can it be based on distance?
-            $delivery->deliveryFare = $this->faker->numberBetween(25_000, 200_000);
+
+            $delivery->deliveryFare = (new Vincenty())->getDistance(
+                new Coordinate($data['pickUpDetails'][0]['latitude'], $data['pickUpDetails'][0]['longitude']),
+                new Coordinate($data['dropOffDetails'][0]['latitude'], $data['dropOffDetails'][0]['longitude'])
+            ) * Config::get('allocation.fee_per_meter');
 
             if (isset($data['dropOffDetails'][0]['merchandise'])) {
                 $delivery->merchandiseCost =  $data['dropOffDetails'][0]['merchandise']['cost'];

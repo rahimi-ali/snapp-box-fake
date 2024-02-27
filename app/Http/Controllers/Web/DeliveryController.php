@@ -9,6 +9,7 @@ use Faker\Factory;
 use Faker\Generator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class DeliveryController extends Controller
@@ -60,6 +61,11 @@ class DeliveryController extends Controller
 
     public function updateStatus(string $maskedId, Request $request): RedirectResponse
     {
+        $user = Auth::user();
+        if (!$user->can_update_deliveries) {
+            abort(403);
+        }
+
         $status = $request->get('status');
 
         /** @var Delivery $delivery */
@@ -93,6 +99,11 @@ class DeliveryController extends Controller
 
     public function payInvoice(string $maskedId): RedirectResponse
     {
+        $user = Auth::user();
+        if (!$user->can_update_deliveries) {
+            abort(403);
+        }
+
         /** @var Delivery $delivery */
         $delivery = Delivery::query()
             ->where('maskedId', $maskedId)
